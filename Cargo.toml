@@ -1,0 +1,8 @@
+[package]
+name = "tsdb"
+version = "0.1.0"
+authors = ["rsouvik"]
+edition = "2018"
+
+[dependencies]
+log = { version = "0.4", features = ["max_level_debug", "release_max_level_warn"] }
