@@ -1,5 +1,7 @@
 
-use log::{Record, Level, Metadata};
+extern crate hyper;
+
+use log::{Record, Level, Metadata, Log};
 
 pub struct SimpleLogger;
 
