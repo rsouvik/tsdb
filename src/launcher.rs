@@ -1,5 +1,6 @@
 extern crate hyper;
 use crate::engine::Engine;
+use crate::logger::SimpleLogger;
 
 pub struct Launcher {
     engine: Option<Box<Engine>>,
