@@ -6,7 +6,7 @@ mod launcher;
 
 use wal::WAL;
 use crate::engine::{NewEngine, addWAL};
-use crate::launcher::{Launcher, NewLauncher};
+use crate::launcher::{Launcher, new_launcher};
 
 fn main() {
     println!("Hello1, world!");
@@ -14,7 +14,7 @@ fn main() {
     storage_eng.addNewWAL();
 
     //start launcher
-    let mut launcher = NewLauncher(0);
+    let mut launcher = new_launcher(0);
 
 
 }
