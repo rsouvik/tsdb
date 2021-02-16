@@ -7,3 +7,5 @@ edition = "2018"
 [dependencies]
 log = { version = "0.4", features = ["max_level_debug", "release_max_level_warn"] }
 hyper = "0.13.3"
+tokio = { version = "0.2", features = ["full"] }
+#geno = { path = "/Users/rsouvik/git/geno"}
