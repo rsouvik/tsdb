@@ -6,7 +6,7 @@ use core::borrow::BorrowMut;
 use std::ops::Deref;
 use std::thread::spawn;
 
-pub struct VectorTable {
+pub struct VectorTable { //updated
 
     path: String,
     flush_state: flushState,
