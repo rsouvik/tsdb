@@ -4,7 +4,7 @@ extern crate hyper;
 use tokio::net::TcpListener;
 use tokio::prelude::*;
 
-use crate::engine::Engine;
+use crate::engine::{Engine, NewEngine};
 use crate::logger::SimpleLogger;
 
 use hyper::{Request,Response,Result};
@@ -25,7 +25,7 @@ pub struct Launcher {
 
 pub fn new_launcher(id: i32) -> Box<Launcher> {
     let mut launcher: Box<Launcher> = Box::new (Launcher{
-        engine: None,
+        engine: Option::from(NewEngine(0)),
         log_level: "WARN",
         //web_server: hyper::server::Server,
         address: "".parse().unwrap(),

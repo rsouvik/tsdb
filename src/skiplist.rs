@@ -20,6 +20,7 @@ impl MemTableStore for SkipList {
     }
 
     fn insertKeyConcurrently() {
+        self.mem.push([key,val]);
         unimplemented!()
     }
 

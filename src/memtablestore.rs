@@ -1,4 +1,5 @@
 use crate::memtable::flushState;
+use crate::vector::VectorTable;
 
 pub trait MemTableStore {
     fn insert_key(&mut self, key: String, val: String);
@@ -65,4 +66,5 @@ impl MemTableStoreFactory for SkipListStore {
 pub fn create_skiplist_store() -> Box<MemTableStore> {
     Box::new(SkipListStore{ path: "".to_string(), flush_state: flushState::FlushNotReq })
 }
+
 

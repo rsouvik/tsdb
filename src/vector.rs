@@ -91,6 +91,14 @@ impl MemTableStore for VectorTable {
     }
 }
 
+pub fn create_vector_store() -> Box<MemTableStore> {
+    Box::new(VectorTable{
+        path: "".to_string(),
+        flush_state: flushState::FlushNotReq,
+        mem: vec![]
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use crate::vector::VectorTable;
