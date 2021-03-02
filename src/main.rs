@@ -14,6 +14,10 @@ use crate::launcher::{Launcher, new_launcher};
 use crate::memtablestore::{SkipListStore, create_skiplist_store};
 use crate::vector::create_vector_store;
 
+/*
+Create in-mem sketches for ML
+
+*/
 
 fn main() {
     println!("Hello1, world!");

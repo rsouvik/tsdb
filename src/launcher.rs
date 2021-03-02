@@ -1,7 +1,7 @@
 extern crate hyper;
 //extern crate tokio;
 
-use tokio::net::TcpListener;
+//use tokio::net::TcpListener;
 use tokio::prelude::*;
 
 use crate::engine::{Engine, NewEngine};
@@ -9,9 +9,11 @@ use crate::logger::SimpleLogger;
 
 use hyper::{Request,Response,Result};
 use self::hyper::{Body, Server};
-use std::net::SocketAddr;
+use std::net::{SocketAddr, TcpStream, TcpListener};
 use std::convert::Infallible;
 use self::hyper::service::{service_fn, make_service_fn};
+use std::io::Read;
+use std::thread;
 //use geno::{add, randnum};
 //use geno::hel;
 
@@ -31,7 +33,8 @@ pub fn new_launcher(id: i32) -> Box<Launcher> {
         address: "".parse().unwrap(),
         port: 443
     });
-    run_http_server();
+    //run_http_server();
+    //run_tcp_server();
 
     return launcher;
 }
@@ -64,4 +67,30 @@ pub async fn run_http_server() {
 
     //let server = hyper::server::Server::bind(&address);
     //server.run();
+}
+
+fn handle_connection(mut stream: TcpStream) {
+    let mut buffer = [0; 1024];
+
+    stream.read(&mut buffer).unwrap();
+
+    println!("Request: {}", String::from_utf8_lossy(&buffer[..]));
+}
+
+
+pub async fn run_tcp_server() {
+
+    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+
+    for stream in listener.incoming() {
+        let stream = stream.unwrap();
+
+        thread::spawn(|| {
+            handle_connection(stream);
+        });
+    }
+
+
+
+
 }
