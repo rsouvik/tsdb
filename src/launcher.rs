@@ -20,7 +20,7 @@ use std::thread;
 pub struct Launcher {
     engine: Option<Box<Engine>>,
     log_level: &'static str,
-    //web_server: hyper::server::Server<&'static str, &'static str>,
+    web_server: hyper::server::Server<&'static str, &'static str>,
     address: String,
     port: i32
 }
@@ -29,7 +29,7 @@ pub fn new_launcher(id: i32) -> Box<Launcher> {
     let mut launcher: Box<Launcher> = Box::new (Launcher{
         engine: Option::from(NewEngine(0)),
         log_level: "WARN",
-        //web_server: hyper::server::Server,
+        web_server: hyper::server::Server,
         address: "".parse().unwrap(),
         port: 443
     });
@@ -37,6 +37,17 @@ pub fn new_launcher(id: i32) -> Box<Launcher> {
     //run_tcp_server();
 
     return launcher;
+}
+
+pub fn start_launcher(l : Launcher) {
+
+    return Ok(1)
+
+}
+
+pub fn stop_launcher(l : launcher) {
+
+
 }
 
 async fn handle(_req: Request<Body>) -> Result<Response<Body>> {
