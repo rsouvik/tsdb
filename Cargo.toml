@@ -2,10 +2,13 @@
 name = "tsdb"
 version = "0.1.0"
 authors = ["rsouvik"]
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 log = { version = "0.4", features = ["max_level_debug", "release_max_level_warn"] }
-hyper = "0.13.3"
-tokio = { version = "0.2", features = ["full"] }
+hyper = { version = "0.14", features = ["full"] }
+tokio = { version = "1", features = ["full"] }
+#tokio = { version = "1", features = ["full"] }
+tokio-rustls = "0.23"
 #geno = { path = "/Users/rsouvik/git/geno"}
+syn = "1.0.103"

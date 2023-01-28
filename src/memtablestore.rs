@@ -12,7 +12,7 @@ pub trait MemTableStore {
 
 pub trait MemTableStoreFactory {
 
-    fn create_mem_table_store(&mut self) -> Box<MemTableStore>;
+    fn create_mem_table_store(&mut self) -> Box<dyn MemTableStore>;
 
 }
 
@@ -55,7 +55,7 @@ impl MemTableStore for SkipListStore {
 }
 
 impl MemTableStoreFactory for SkipListStore {
-    fn create_mem_table_store(&mut self) -> Box<MemTableStore> {
+    fn create_mem_table_store(&mut self) -> Box<dyn MemTableStore> {
         unimplemented!()
     }
     //fn create_mem_table_store<'a>(&'a mut self) -> _ {
@@ -63,7 +63,7 @@ impl MemTableStoreFactory for SkipListStore {
     //}
 }
 
-pub fn create_skiplist_store() -> Box<MemTableStore> {
+pub fn create_skiplist_store() -> Box<dyn MemTableStore> {
     Box::new(SkipListStore{ path: "".to_string(), flush_state: flushState::FlushNotReq })
 }
 

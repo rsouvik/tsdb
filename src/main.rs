@@ -1,3 +1,4 @@
+extern crate syn;
 
 mod wal;
 mod logger;
@@ -16,7 +17,7 @@ use crate::vector::create_vector_store;
 
 /*
 Create in-mem sketches for ML
-
+Block store
 */
 
 fn main() {
@@ -27,9 +28,8 @@ fn main() {
     //storage_eng.addNewWAL();
 
     //start launcher
-    let mut launcher = new_launcher(0);
-    start_launcher(Launcher::from(launcher));
-
+    //let mut launcher = new_launcher(0);
+    //start_launcher(Launcher::from(launcher));
 
     //stop_launcher(launcher);
 
