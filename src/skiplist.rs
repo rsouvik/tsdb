@@ -87,13 +87,95 @@ where
         self.iter().last()
     }
 
-    fn insert(&mut self, key: K, value: V) -> Rc<RefCell<SkipNode<K, V>>>{
+    //bisect after
+    fn bisect_after(&self, node: &Rc<RefCell<Node<K, V>>>, target: &K) -> Link<K, V> {
+        if node.borrow().key.cmp(target) == Ordering::Greater {
+            return None;
+        }
+        let mut maybe_current = Some(Rc::clone(node));
+        let mut prev: Link<K, V> = node.borrow().left.as_ref().and_then(Weak::upgrade);
+        let mut output = None;
+        while maybe_current.is_some() {
+            let current = maybe_current.take().unwrap();
+            prev = Some(Rc::clone(&current));
+            match current.borrow().cmp(target) {
+                Ordering::Less => {
+                    maybe_current = current.borrow().right.as_ref().map(Rc::clone);
+                }
+                Ordering::Equal => {
+                    maybe_current = current.borrow().right.as_ref().map(Rc::clone);
+                }
+                Ordering::Greater => {
+                    output = current.borrow().left.as_ref().and_then(Weak::upgrade);
+                }
+            };
+            if output.is_some() {
+                break;
+            }
+        }
+        // found insertion point
+        if output.is_some() {
+            return output;
+        }
+        return prev;
+    }
 
+    fn insert(&mut self, key: K, value: V) -> Rc<RefCell<Node<K, V>>> {
+        let mut head: Link<K, V> = self.head.as_ref().map(Rc::clone);
+        let mut maybe_prev_node = Option::None;
+        while head.is_some() {
+            let node = head.take().unwrap();
+            match node.borrow().cmp(&key) {
+                Ordering::Less | Ordering::Equal => {
+                    maybe_prev_node = Some(Rc::clone(&node));
+                    head = node.borrow().right.as_ref().map(Rc::clone);
+                }
+                Ordering::Greater => {
+                    break;
+                }
+            };
+        }
+        return match maybe_prev_node {
+            // insert at head
+            None => {
+                let maybe_prev_head_ref: Option<Rc<RefCell<Node<K, V>>>> =
+                    self.head.as_ref().map(Rc::clone);
+                if maybe_prev_head_ref.is_some() {
+                    let prev_head_ref = maybe_prev_head_ref.unwrap();
+                    let new_head = Rc::new(RefCell::new(Node::new(key, value)));
+                    new_head.borrow_mut().right = self.head.take();
+                    self.head = Some(new_head);
+                    prev_head_ref.borrow_mut().left = self.head.as_ref().map(Rc::downgrade);
+                } else {
+                    self.head = Some(Rc::new(RefCell::new(Node::new(key, value))));
+                }
+                self.size += 1;
+                Rc::clone(self.head.as_ref().unwrap())
+            }
+            Some(prev_node) => {
+                let maybe_next_node: Option<Rc<RefCell<Node<K, V>>>> =
+                    prev_node.borrow().right.as_ref().map(Rc::clone);
+                let new_node = Rc::new(RefCell::new(Node::new(key, value)));
+                if maybe_next_node.is_some() {
+                    // handle insert in the middle
+                    let next_node = maybe_next_node.unwrap();
+                    next_node.borrow_mut().left = Some(Rc::downgrade(&new_node));
+                    new_node.borrow_mut().right = prev_node.borrow_mut().right.take();
+                    new_node.borrow_mut().left = Some(Rc::downgrade(&prev_node));
+                    prev_node.borrow_mut().right = Some(new_node);
+                    self.size += 1;
+                } else {
+                    // handle insert at tail
+                    new_node.borrow_mut().left = Some(Rc::downgrade(&prev_node));
+                    prev_node.borrow_mut().right = Some(new_node);
+                    self.size += 1;
+                }
+                Rc::clone(prev_node.borrow().right.as_ref().unwrap())
+            }
+        };
     }
 
 }
-
-
 
 
 #[cfg(test)]
