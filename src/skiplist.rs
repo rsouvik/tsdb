@@ -120,6 +120,21 @@ where
         return prev;
     }
 
+    fn insert_after(&mut self, key: K,
+                    value: V,
+                    after: Rc<RefCell<Node<K, V>>>
+    ) -> Rc<RefCell<Node<K, V>>> {
+        //Create the node first
+        let node = Rc::new(RefCell::new(SkipNode::new(key,value)));
+        let maybe_next_node = after.borrow_mut().right.take1();
+
+
+
+
+
+
+    }
+
     fn insert(&mut self, key: K, value: V) -> Rc<RefCell<Node<K, V>>> {
         let mut head: Link<K, V> = self.head.as_ref().map(Rc::clone);
         let mut maybe_prev_node = Option::None;
