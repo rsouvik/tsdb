@@ -212,6 +212,8 @@ pub fn create_vector_store() -> Box<dyn MemTableStore<String,String>> {
     })
 }
 
+
+//check here
 #[cfg(test)]
 mod tests {
     use crate::vector::VectorTable;
