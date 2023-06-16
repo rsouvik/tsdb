@@ -2,6 +2,7 @@ use crate::wal::{WAL, NewWAL};
 use crate::logger::SimpleLogger;
 use std::sync::RwLock;
 use std::ptr::null;
+use std::option::Option::{self, Some, None};
 
 pub trait addWAL {
     fn addNewWAL(&mut self);
@@ -38,7 +39,7 @@ pub fn NewEngine(id : i32) -> Box<Engine> {
         segment_size: 0,
         mu: RwLock::new(5),
         logger: SimpleLogger,
-        wal: None
+        wal: Option::None
     });
     eng.wal = Option::from(NewWAL(String::from(""), 5));
     return eng
