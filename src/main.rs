@@ -36,9 +36,12 @@ fn main() {
     //stop_launcher(launcher);
 
     //Add key/value
-    //let mut skip_ls_st = create_skiplist_store();
+    let mut skip_ls_st = create_skiplist_store();
 
     let mut vec_st = create_vector_store();
+    vec_st.insert_key_concurrently("Sou".parse().unwrap(), "Ray".parse().unwrap());
+    vec_st.insert_key_concurrently("Sou1".parse().unwrap(), "Ray1".parse().unwrap());
+    vec_st.insert_key("Sou1".parse().unwrap(), "Ray1".parse().unwrap());
 
     //skip_ls_st.insert();
     //skip_ls_st.insert_key();

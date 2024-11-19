@@ -11,7 +11,7 @@ use syn::parse::{Parse, ParseStream, Result};
 use std::option::Option::{self, Some, None};
 //use syn::parse::Unexpected::{None, Some};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct VNode<K,V> {
     key: K,
     value: V,
@@ -19,8 +19,10 @@ pub struct VNode<K,V> {
 
 impl<K, V> VNode<K, V>
     where
-        K: Ord + Clone,
-        V: Clone,
+        //K: Ord + Clone,
+        //V: Clone,
+        K: Ord + Clone + Send + Sync + 'static,
+        V: Clone + Send + Sync + 'static,
 {
     /*fn new(key: K, value: V) -> VNode<K,V>{
         VNode{
@@ -85,11 +87,13 @@ pub struct VectorTable<K,V> { //updated
 
 impl<K,V> MemTableStore<K,V> for VectorTable<K,V>
     where
-        K: Ord + Clone,
-        V: Clone,
+        //K: Ord + Clone,
+        //V: Clone,
+        K: Ord + Clone + Send + Sync + 'static,
+        V: Clone + Send + Sync + 'static,
 {
     fn insert_key(&mut self, key: K, val: V) {
-        unimplemented!()
+        self.mem.push(VNode::new_node(key,val));
     }
 
     fn insert(&mut self, key: K, val: V) {
@@ -123,9 +127,26 @@ impl<K,V> MemTableStore<K,V> for VectorTable<K,V>
         //let node = Rc::new(RefCell::new(VNode::new(key,val)));
         //self.mem.push(VNode::new(key.clone(),val.clone()));
 
-        let node = Box::new(VNode::new_node(key,value));
+        //let node = Box::new(VNode::new_node(key,value));
 
-        self.mem.push(*node);
+        //self.mem.push(*node);
+
+        //let my_vector = Arc::new(Mutex::new(self)).clone();
+        //let mut tx_guard = my_vector.lock().unwrap();
+        //tx_guard.mem.push(VNode::new_node(key,value));
+
+        // Wrap the `mem` field in `Arc<Mutex<>>` temporarily
+        //let mem_arc = Arc::new(Mutex::new(&mut self.mem));
+        let mem_arc = Arc::new(Mutex::new(self.mem.clone()));
+
+        // Spawn a new thread to perform the insert
+        let handle = spawn(move || {
+            let mut mem_guard = mem_arc.lock().unwrap();
+            mem_guard.push(VNode::new_node(key, value));
+        });
+
+        // Wait for the thread to finish
+        handle.join().unwrap();
 
         //self.mem.push(Rc::new(RefCell::new(VNode::new(key,val))));
 
@@ -225,6 +246,7 @@ mod tests {
     use std::cell::RefCell;
     use std::rc::Rc;
     use syn::parse::Parser;
+    use std::option::Option::{self, Some, None};
 //    use vector::VNode;
 
     /*#[test]
@@ -243,6 +265,81 @@ mod tests {
         assert_eq!(store.get("Souvik".parse().unwrap()), "1");
         assert_eq!(store.get("Sou".parse().unwrap()), "Ray")
     }*/
+
+    fn it_works_insert_concurrent_key1() {
+
+        let node = Box::new(VNode::new_node("sOUVIK","rAY"));
+        let mut store = Box::new(VectorTable{
+            path: "".to_string(),
+            flush_state: FlushNotReq,
+            mem: vec![*node],
+        });
+
+        let k = "num".clone();
+        let v = "ray".clone();
+
+        store.insert_key_concurrently(k,v);
+
+        let k1 = "num1".clone();
+        let v1 = "ray1".clone();
+
+        store.insert_key_concurrently(k1,v1);
+        assert_eq!(store.get("num1"), Some("ray1").as_ref());
+        //assert_eq!(store.get("num1"), Some("ray1").to_string());
+
+        /*let mut handles = vec![];
+
+        let update_thread = spawn(move || {
+            store.insert_key_concurrently(k,v);
+        });
+        handles.push(update_thread);
+
+        let mut num = 0;
+        for _ in 0..0 {
+            //let k = String::from(i);
+            //let v = String::from("ray");
+            //num = num + 1;
+            let k = "num".clone();
+            let v = "ray".clone();
+            let update_thread = spawn(move || {
+                store.insert_key_concurrently(k,v);
+            });
+            handles.push(update_thread);
+        }
+
+        for handle in handles {
+            handle.join().unwrap();
+        }*/
+
+        /*let node = Box::new(VNode::new_node("sOUVIK","rAY"));
+        let mut store =Box::new(VectorTable{
+            path: "".to_string(),
+            flush_state: FlushNotReq,
+            mem: vec![*node],
+        });
+
+        //{
+        let my_vector = Arc::new(Mutex::new(store)).clone();
+        let update_thread = spawn(move || {
+            let mut tx_guard = my_vector.lock().unwrap();
+            //tx_guard.mem.push([key,val])
+            //let k = String::from("Sou");
+            //let v = String::from("2");
+            let k = "sOUVIK";
+            let v = "2";
+            //tx_guard.insert_key_concurrently("Sou".to_owned().parse().unwrap(), "2".to_owned().parse().unwrap());
+            //tx_guard.insert_key_concurrently(k.parse().unwrap(), v.parse().unwrap());
+            tx_guard.insert_key_concurrently(k, v);
+
+            //assert_eq!(tx_guard.get("Sou".parse().unwrap()), "2");
+            //println!("{:?}",tx_guard.get("Sou".parse().unwrap()));
+            println!("{:?}",tx_guard.get(&k));
+
+        });
+        update_thread.join().unwrap();*/
+        //}
+        //assert_eq!(store.get("Sou".parse().unwrap()), "2");
+    }
 
     #[test]
     fn it_works_insert_concurrent_key() {

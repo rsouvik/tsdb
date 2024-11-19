@@ -28,7 +28,7 @@ impl addWAL for Engine {
 // TSM engine.
 pub fn NewEngine(id : i32) -> Box<Engine> {
     //let n_wal : WAL = WAL { current_segment_id: (id), logger: SimpleLogger, mu: RwLock::new(5), segment_size: 1024};
-    //return n_wal;
+    //return n_wal;`
 
     //WAL { current_segment_id: (id), logger: SimpleLogger, mu: RwLock::new(5), segment_size: 1024}
     //Initialize WAL
