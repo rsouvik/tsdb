@@ -3,9 +3,10 @@
 
 pub trait openDB {
     fn open(&mut self);
+    fn open_for_read_only(&mut self);
     fn close(&mut self);
-    fn read();
-    fn write();
+    fn get(&mut self);
+    fn put(&mut self);
 }
 
 OpenForReadOnly();
@@ -14,8 +15,6 @@ pub struct Db {
 
     path: string,
 
-
-
 }
 
 impl openDB for Db {
@@ -23,15 +22,19 @@ impl openDB for Db {
         unimplemented!()
     }
 
+    fn open_for_read_only(&mut self) {
+        unimplemented!()
+    }
+
     fn close(&mut self) {
         unimplemented!()
     }
 
-    fn read() {
+    fn get(&mut self) {
         unimplemented!()
     }
 
-    fn write() {
+    fn put(&mut self) {
         unimplemented!()
     }
 }
